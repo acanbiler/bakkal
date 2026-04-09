@@ -971,7 +971,7 @@ export const toasts = {
 - Create: `src/routes/kayit/+page.server.ts`
 - Create: `src/routes/kayit/+page.svelte`
 
-- [ ] **Step 1: Root layout server (load session + site settings)**
+- [x] **Step 1: Root layout server (load session + site settings)**
 
 ```typescript
 // src/routes/+layout.server.ts
@@ -989,7 +989,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 };
 ```
 
-- [ ] **Step 2: Root layout.svelte**
+- [x] **Step 2: Root layout.svelte**
 
 ```svelte
 <!-- src/routes/+layout.svelte -->
@@ -1015,15 +1015,15 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 <ToastContainer />
 ```
 
-- [ ] **Step 3: Header component (logo, search, cart icon, auth links)**
+- [x] **Step 3: Header component (logo, search, cart icon, auth links)**
 
 Create `src/lib/components/layout/Header.svelte` with Tailwind classes, using `tr` locale for all strings.
 
-- [ ] **Step 4: Footer component**
+- [x] **Step 4: Footer component**
 
 Create `src/lib/components/layout/Footer.svelte` with contact info and social links from settings.
 
-- [ ] **Step 5: Login page server action**
+- [x] **Step 5: Login page server action**
 
 ```typescript
 // src/routes/giris/+page.server.ts
@@ -1053,7 +1053,7 @@ export const actions: Actions = {
 };
 ```
 
-- [ ] **Step 6: Register page server action**
+- [x] **Step 6: Register page server action**
 
 ```typescript
 // src/routes/kayit/+page.server.ts
@@ -1088,18 +1088,13 @@ export const actions: Actions = {
 };
 ```
 
-- [ ] **Step 7: Create login and register Svelte pages (form UI)**
+- [x] **Step 7: Create login and register Svelte pages (form UI)**
 
-Minimal forms with email/password inputs, form action, error display using `tr` locale.
+- [x] **Step 8: Commit**
 
-- [ ] **Step 8: Commit**
+- [x] **Step 9: Update this plan, mark task complete, prompt user**
 
-```bash
-git add -A
-git commit -m "feat: add root layout, auth routes (login/register)"
-```
-
-- [ ] **Step 9: Update this plan, mark task complete, prompt user**
+> ✅ **COMPLETED** — Svelte 5 syntax used (`$props()`, `{@render children()}`). Also created `ToastContainer.svelte` (referenced in layout). Added redirect-if-logged-in guard to login/register load functions.
 
 ---
 
