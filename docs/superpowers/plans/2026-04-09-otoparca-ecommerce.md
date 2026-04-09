@@ -1333,11 +1333,11 @@ git commit -m "feat: add product detail page with SEO and fitment table"
 - Create: `src/routes/odeme/3d/+page.svelte`
 - Create: `src/routes/odeme/sonuc/+page.svelte`
 
-- [ ] **Step 1: Cart page (display cart store items, update qty, remove, total)**
+- [x] **Step 1: Cart page (display cart store items, update qty, remove, total)**
 
 Pure client-side using the `cart` store. Uses `tr.cart` locale strings.
 
-- [ ] **Step 2: Checkout page server (load saved addresses for logged-in users)**
+- [x] **Step 2: Checkout page server (load saved addresses for logged-in users)**
 
 ```typescript
 // src/routes/odeme/+page.server.ts
@@ -1353,7 +1353,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 ```
 
-- [ ] **Step 3: Checkout page (3-step form: address, card, review)**
+- [x] **Step 3: Checkout page (3-step form: address, card, review)**
 
 - Address form with saved address selector for logged-in users
 - Card form with BIN lookup on first 6–8 digits (fetch `/api/bin`)
@@ -1361,7 +1361,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 - Order summary with line items from cart store
 - Submit triggers `POST /api/odeme/baslat`
 
-- [ ] **Step 4: 3D page (inject HTML from API response, auto-submit form)**
+- [x] **Step 4: 3D page (inject HTML from API response, auto-submit form)**
 
 ```svelte
 <!-- src/routes/odeme/3d/+page.svelte -->
@@ -1378,16 +1378,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 <div bind:this={container}></div>
 ```
 
-- [ ] **Step 5: Result page (success/failure display based on URL param)**
+- [x] **Step 5: Result page (success/failure display based on URL param)**
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add cart page and checkout flow"
 ```
 
-- [ ] **Step 7: Update this plan, mark task complete, prompt user**
+- [x] **Step 7: Update this plan, mark task complete, prompt user**
 
 ---
 
