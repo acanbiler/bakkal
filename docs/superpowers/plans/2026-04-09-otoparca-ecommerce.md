@@ -1655,13 +1655,13 @@ git commit -m "feat: add admin panel layout, dashboard, and categories"
 - Create: `src/routes/admin/urunler/[id]/+page.server.ts`
 - Note: New product creation uses `admin/urunler/yeni` (Turkish for "new") which renders the same form component as edit, passing `id = 'yeni'` to signal creation mode
 
-- [ ] **Step 1: Products list server (paginated, searchable)**
+- [x] **Step 1: Products list server (paginated, searchable)**
 
 Query Postgres (not Meilisearch) for admin list to show all products including inactive.
 
-- [ ] **Step 2: Products list page (table with edit/toggle links, bulk CSV import button)**
+- [x] **Step 2: Products list page (table with edit/toggle links, bulk CSV import button)**
 
-- [ ] **Step 3: Product edit/create server actions**
+- [x] **Step 3: Product edit/create server actions**
 
 ```typescript
 // src/routes/admin/urunler/[id]/+page.server.ts
@@ -1679,7 +1679,7 @@ Validation per §7:
 - stock_qty: integer ≥ 0
 - category_id: must exist
 
-- [ ] **Step 4: Product edit Svelte page**
+- [x] **Step 4: Product edit Svelte page**
 
 Full form with:
 - All product fields
@@ -1687,18 +1687,18 @@ Full form with:
 - Vehicle fitments table (add/edit/delete rows)
 - Active/featured toggles
 
-- [ ] **Step 5: CSV import action**
+- [x] **Step 5: CSV import action**
 
 Parse CSV (columns: name, sku, price, stock, category_slug, brand), upsert products, sync each to Meilisearch.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add admin products CRUD with Meilisearch sync"
 ```
 
-- [ ] **Step 7: Update this plan, mark task complete, prompt user**
+- [x] **Step 7: Update this plan, mark task complete, prompt user**
 
 ---
 
