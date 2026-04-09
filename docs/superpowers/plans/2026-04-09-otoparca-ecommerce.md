@@ -102,7 +102,7 @@ nginx.conf
 - Create: `.env.example`
 - Create: `static/robots.txt`
 
-- [ ] **Step 1: Initialize SvelteKit project with adapter-node**
+- [x] **Step 1: Initialize SvelteKit project with adapter-node**
 
 ```bash
 npx sv create . --template minimal --types ts --no-add-ons
@@ -110,7 +110,7 @@ npm install
 npm install -D @sveltejs/adapter-node tailwindcss @tailwindcss/typography postcss autoprefixer
 ```
 
-- [ ] **Step 2: Configure svelte.config.ts**
+- [x] **Step 2: Configure svelte.config.ts**
 
 ```typescript
 // svelte.config.ts
@@ -125,7 +125,7 @@ export default {
 };
 ```
 
-- [ ] **Step 3: Install all dependencies**
+- [x] **Step 3: Install all dependencies**
 
 ```bash
 npm install drizzle-orm postgres @lucia-auth/adapter-postgresql lucia \
@@ -133,7 +133,7 @@ npm install drizzle-orm postgres @lucia-auth/adapter-postgresql lucia \
 npm install -D drizzle-kit @types/bcryptjs
 ```
 
-- [ ] **Step 4: Configure drizzle.config.ts**
+- [x] **Step 4: Configure drizzle.config.ts**
 
 ```typescript
 import { defineConfig } from 'drizzle-kit';
@@ -145,7 +145,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 5: Create .env.example**
+- [x] **Step 5: Create .env.example**
 
 ```env
 DATABASE_URL=postgresql://postgres:PLACEHOLDER@db:5432/otoparca
@@ -162,7 +162,7 @@ UPLOAD_DIR=/app/uploads
 MAX_UPLOAD_BYTES=5242880
 ```
 
-- [ ] **Step 6: Create static/robots.txt**
+- [x] **Step 6: Create static/robots.txt**
 
 ```
 User-agent: *
@@ -171,14 +171,16 @@ Disallow: /api
 Disallow: /odeme
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: scaffold SvelteKit project with all dependencies"
 ```
 
-- [ ] **Step 8: Update this plan, mark task complete, prompt user**
+- [x] **Step 8: Update this plan, mark task complete, prompt user**
+
+> ✅ **COMPLETED** — Node 22 required (added .nvmrc). Used `@lucia-auth/adapter-drizzle` (not `adapter-postgresql`).
 
 ---
 
