@@ -26,6 +26,29 @@ usermod -aG docker deploy
 su - deploy
 ```
 
+### Swap (required on 2 GB RAM servers)
+
+Meilisearch is memory-hungry and will OOM-kill without swap:
+
+```bash
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+```
+
+### Docker log rotation
+
+Prevent Docker logs from filling the disk:
+
+```bash
+cat > /etc/docker/daemon.json <<'EOF'
+{"log-driver":"json-file","log-opts":{"max-size":"50m","max-file":"3"}}
+EOF
+systemctl restart docker
+```
+
 ---
 
 ## 2. Clone the Repository
@@ -55,7 +78,7 @@ nano .env
 | `TAMI_MERCHANT_NUMBER` | Assigned by Tami on merchant registration | — |
 | `TAMI_TERMINAL_NUMBER` | Assigned by Tami on merchant registration | — |
 | `TAMI_SECRET_KEY` | HMAC secret key from Tami | — |
-| `TAMI_API_BASE_URL` | **Production:** `https://paymentapi.tami.com.tr` | — |
+| `TAMI_API_BASE_URL` | **Production:** `https://paymentapi.tami.com.tr` — ensure this is NOT the sandbox URL | — |
 | `MEILI_URL` | Meilisearch URL (internal) | `http://meilisearch:7700` |
 | `MEILI_MASTER_KEY` | Random string ≥ 16 chars | `openssl rand -base64 24` |
 | `UPLOAD_DIR` | Path inside container for uploaded files | `/app/uploads` |
@@ -116,8 +139,9 @@ docker compose up -d --build
 
 On first start the `docker-entrypoint.sh` automatically:
 1. Runs `drizzle-kit migrate` (applies all pending DB migrations)
-2. Runs `node scripts/reindex.mjs` (populates Meilisearch — skips if no products yet)
-3. Starts `node build/index.js`
+2. Seeds the `site_settings` singleton row if it doesn't exist yet
+3. Runs `node scripts/reindex.mjs` (populates Meilisearch — skips if no products yet)
+4. Starts `node build/index.js`
 
 Check that everything started cleanly:
 
@@ -187,6 +211,35 @@ docker compose up -d --build app
 The `app` service restarts with the new image. Migrations run automatically on startup. Downtime is typically under 10 seconds.
 
 To deploy without brief downtime, use a rolling-restart approach with a load balancer — outside the scope of this guide.
+
+---
+
+## 11. Backups
+
+Back up Postgres daily with a cron job. Meilisearch is rebuildable; `uploads` contains user images.
+
+```bash
+# Create backup directory
+mkdir -p /srv/backups
+
+# Add to crontab (runs at 2 AM daily, keeps 7 days)
+crontab -e
+```
+
+```
+0 2 * * * docker compose -f /srv/otoparca/docker-compose.yml exec -T db \
+  pg_dump -U postgres otoparca | gzip > /srv/backups/otoparca_$(date +\%Y\%m\%d).sql.gz && \
+  find /srv/backups -name '*.sql.gz' -mtime +7 -delete
+```
+
+To restore from a backup:
+
+```bash
+gunzip -c /srv/backups/otoparca_20240101.sql.gz | \
+  docker compose exec -T db psql -U postgres otoparca
+```
+
+> Uploads volume backup: `tar czf /srv/backups/uploads_$(date +%Y%m%d).tar.gz /var/lib/docker/volumes/otoparca_uploads`
 
 ---
 
