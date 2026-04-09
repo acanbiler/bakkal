@@ -1240,7 +1240,7 @@ export const load: PageServerLoad = async ({ url }) => {
 - Create: `src/lib/components/shop/ImageGallery.svelte`
 - Create: `src/lib/components/shop/FitmentTable.svelte`
 
-- [ ] **Step 1: Product detail server (load from Postgres, fitments, related)**
+- [x] **Step 1: Product detail server (load from Postgres, fitments, related)**
 
 ```typescript
 // src/routes/urunler/[slug]/+page.server.ts
@@ -1273,7 +1273,7 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 ```
 
-- [ ] **Step 2: Product detail Svelte page with JSON-LD and SEO meta**
+- [x] **Step 2: Product detail Svelte page with JSON-LD and SEO meta**
 
 Include:
 - `<svelte:head>` with title, description, canonical, OG tags
@@ -1283,9 +1283,9 @@ Include:
 - FitmentTable
 - Related products
 
-- [ ] **Step 3: ImageGallery component (thumbnails + main view)**
+- [x] **Step 3: ImageGallery component (thumbnails + main view)**
 
-- [ ] **Step 4: FitmentTable component**
+- [x] **Step 4: FitmentTable component**
 
 ```svelte
 <!-- src/lib/components/shop/FitmentTable.svelte -->
@@ -1313,14 +1313,14 @@ Include:
 {/if}
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add product detail page with SEO and fitment table"
 ```
 
-- [ ] **Step 6: Update this plan, mark task complete, prompt user**
+- [x] **Step 6: Update this plan, mark task complete, prompt user**
 
 ---
 
