@@ -1511,7 +1511,7 @@ git commit -m "feat: add payment, bin, search, and upload API endpoints"
 - Create: `src/routes/hesabim/+page.svelte`
 - Create: `src/routes/sitemap.xml/+server.ts`
 
-- [ ] **Step 1: Account page server (require auth, load orders)**
+- [x] **Step 1: Account page server (require auth, load orders)**
 
 ```typescript
 // src/routes/hesabim/+page.server.ts
@@ -1530,9 +1530,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 ```
 
-- [ ] **Step 2: Account page Svelte (orders list with status)**
+- [x] **Step 2: Account page Svelte (orders list with status)**
 
-- [ ] **Step 3: Sitemap endpoint**
+- [x] **Step 3: Sitemap endpoint**
 
 ```typescript
 // src/routes/sitemap.xml/+server.ts
@@ -1568,14 +1568,14 @@ ${urls}
 };
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add account page and sitemap endpoint"
 ```
 
-- [ ] **Step 5: Update this plan, mark task complete, prompt user**
+- [x] **Step 5: Update this plan, mark task complete, prompt user**
 
 ---
 
