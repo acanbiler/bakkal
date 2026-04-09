@@ -190,7 +190,7 @@ git commit -m "feat: scaffold SvelteKit project with all dependencies"
 - Create: `src/lib/server/db/schema.ts`
 - Create: `src/lib/server/db/index.ts`
 
-- [ ] **Step 1: Write schema.ts with all tables and enums**
+- [x] **Step 1: Write schema.ts with all tables and enums**
 
 ```typescript
 // src/lib/server/db/schema.ts
@@ -360,13 +360,15 @@ const client = postgres(process.env.DATABASE_URL!);
 export const db = drizzle(client, { schema });
 ```
 
-- [ ] **Step 3: Generate initial migration**
+- [x] **Step 2: Write db/index.ts singleton**
+
+- [x] **Step 3: Generate initial migration**
 
 ```bash
 npx drizzle-kit generate
 ```
 
-- [ ] **Step 4: Add raw SQL constraints to migration**
+- [x] **Step 4: Add raw SQL constraints to migration**
 
 Open the generated migration file in `drizzle/migrations/` and append:
 ```sql
@@ -378,14 +380,11 @@ ALTER TABLE vehicle_fitments
 CREATE INDEX idx_fitments_token ON vehicle_fitments USING GIN (to_tsvector('simple', token));
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
-```bash
-git add -A
-git commit -m "feat: add database schema and Drizzle migrations"
-```
+- [x] **Step 6: Update this plan, mark task complete, prompt user**
 
-- [ ] **Step 6: Update this plan, mark task complete, prompt user**
+> ✅ **COMPLETED** — Also added `@types/node` and `types: ["node"]` in tsconfig to fix `process` not found error.
 
 ---
 
