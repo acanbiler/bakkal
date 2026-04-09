@@ -26,7 +26,7 @@
             {#if item.imageUrl}
               <img src={item.imageUrl} alt={item.name} class="h-20 w-20 rounded-lg object-contain p-1 bg-gray-50" />
             {:else}
-              <div class="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100 text-gray-400 text-xs">Görsel yok</div>
+              <div class="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100 text-gray-400 text-xs">{tr.cart.noImage}</div>
             {/if}
           </a>
 

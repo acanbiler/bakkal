@@ -182,8 +182,8 @@
       <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">{tr.admin.refund}</h2>
       <form method="POST" action="?/refund" use:enhance class="flex gap-2 items-end">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-gray-600">İade Tutarı (₺)</label>
-          <input name="amount" type="number" step="0.01" min="0.01" bind:value={refundAmount}
+          <label for="refund-amount" class="text-xs font-medium text-gray-600">İade Tutarı (₺)</label>
+          <input id="refund-amount" name="amount" type="number" step="0.01" min="0.01" bind:value={refundAmount}
             class="rounded-lg border border-gray-300 px-3 py-2 text-sm w-40" />
         </div>
         <button

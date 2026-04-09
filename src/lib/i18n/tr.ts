@@ -9,6 +9,12 @@ export const tr = {
     logout: 'Çıkış Yap',
     admin: 'Yönetim Paneli'
   },
+  // Home page
+  home: {
+    tagline: 'Orijinal Araç Parçaları',
+    featuredProducts: 'Öne Çıkan Ürünler',
+    viewAll: 'Tüm Ürünleri Gör'
+  },
   // Landing
   hero: {
     searchPlaceholder: 'Ürün, marka veya araç ara...',
@@ -60,7 +66,8 @@ export const tr = {
     total: 'Toplam',
     checkout: 'Ödemeye Geç',
     remove: 'Kaldır',
-    continueShopping: 'Alışverişe Devam Et'
+    continueShopping: 'Alışverişe Devam Et',
+    noImage: 'Görsel yok'
   },
   // Checkout
   checkout: {

@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.settings?.siteName ?? 'Otoparca'} — Orijinal Araç Parçaları</title>
+  <title>{data.settings?.siteName ?? 'Otoparca'} — {tr.home.tagline}</title>
   <meta name="description" content="Türkiye'nin güvenilir otomobil yedek parça mağazası." />
 </svelte:head>
 
@@ -79,7 +79,7 @@
 {#if data.featured.length > 0}
   <section class="pb-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h2 class="mb-6 text-xl font-bold text-gray-900">Öne Çıkan Ürünler</h2>
+      <h2 class="mb-6 text-xl font-bold text-gray-900">{tr.home.featuredProducts}</h2>
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {#each data.featured as product}
           <ProductCard {product} />
@@ -90,7 +90,7 @@
           href="/urunler"
           class="inline-block rounded-full border border-[--primary] px-8 py-2.5 text-sm font-semibold text-[--primary] hover:bg-[--primary] hover:text-white transition"
         >
-          Tüm Ürünleri Gör
+          {tr.home.viewAll}
         </a>
       </div>
     </div>

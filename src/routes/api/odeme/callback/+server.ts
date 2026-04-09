@@ -3,6 +3,7 @@ import { db } from '$lib/server/db/index.js';
 import { orders, orderItems, paymentAttempts, products } from '$lib/server/db/schema.js';
 import { eq, and, sql } from 'drizzle-orm';
 import { verifyCallbackHash, tamiRequest, newCorrelId } from '$lib/server/tami.js';
+import { log } from '$lib/server/logger.js';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -22,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	// Hash verification — hard fail on mismatch
 	if (!verifyCallbackHash(params, receivedHash)) {
-		console.error(`[callback] Hash mismatch for tamiOrderId=${tamiOrderId}`);
+		log('warn', { msg: 'callback hash mismatch', tamiOrderId });
 		redirect(302, '/odeme/sonuc?durum=basarisiz');
 	}
 
@@ -114,7 +115,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					newCorrelId()
 				);
 			} catch {
-				console.error(`[callback] Refund failed for tamiOrderId=${tamiOrderId}`);
+				log('error', { msg: 'callback stock-insufficient refund failed', tamiOrderId });
 			}
 		}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tr } from '$lib/i18n/tr.js';
-  export let fitments: Array<{make: string; model: string; yearFrom: number; yearTo: number; notes?: string | null}>;
+  let { fitments }: { fitments: Array<{make: string; model: string; yearFrom: number; yearTo: number; notes?: string | null}> } = $props();
 </script>
 
 {#if fitments.length}

@@ -9,9 +9,7 @@
 
 <svelte:head>
   <html lang="tr" />
-  <style>
-    :root { --primary: {data.settings?.primaryColor ?? '#e11d48'}; }
-  </style>
+  {@html `<style>:root{--primary:${data.settings?.primaryColor ?? '#e11d48'}}</style>`}
 </svelte:head>
 
 <Header user={data.user} settings={data.settings} />

@@ -58,8 +58,8 @@
   <!-- Filters -->
   <form method="get" class="flex flex-wrap gap-2 items-end">
     <div class="flex flex-col gap-1">
-      <label class="text-xs font-medium text-gray-600">Durum</label>
-      <select name="durum" value={data.status}
+      <label for="durum" class="text-xs font-medium text-gray-600">Durum</label>
+      <select id="durum" name="durum" value={data.status}
         class="rounded-xl border border-gray-300 px-3 py-2 text-sm bg-white">
         <option value="">Tümü</option>
         {#each ORDER_STATUSES as s}
@@ -68,13 +68,13 @@
       </select>
     </div>
     <div class="flex flex-col gap-1">
-      <label class="text-xs font-medium text-gray-600">Başlangıç Tarihi</label>
-      <input name="tarih_baslangic" type="date" value={data.dateFrom}
+      <label for="tarih_baslangic" class="text-xs font-medium text-gray-600">Başlangıç Tarihi</label>
+      <input id="tarih_baslangic" name="tarih_baslangic" type="date" value={data.dateFrom}
         class="rounded-xl border border-gray-300 px-3 py-2 text-sm" />
     </div>
     <div class="flex flex-col gap-1">
-      <label class="text-xs font-medium text-gray-600">Bitiş Tarihi</label>
-      <input name="tarih_bitis" type="date" value={data.dateTo}
+      <label for="tarih_bitis" class="text-xs font-medium text-gray-600">Bitiş Tarihi</label>
+      <input id="tarih_bitis" name="tarih_bitis" type="date" value={data.dateTo}
         class="rounded-xl border border-gray-300 px-3 py-2 text-sm" />
     </div>
     <button type="submit" class="rounded-xl bg-gray-800 px-4 py-2 text-sm font-semibold text-white hover:opacity-90">Filtrele</button>
