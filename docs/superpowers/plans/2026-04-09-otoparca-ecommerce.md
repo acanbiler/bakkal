@@ -1588,7 +1588,7 @@ git commit -m "feat: add account page and sitemap endpoint"
 - Create: `src/routes/admin/kategoriler/+page.svelte`
 - Create: `src/routes/admin/kategoriler/+page.server.ts`
 
-- [ ] **Step 1: Admin layout guard**
+- [x] **Step 1: Admin layout guard**
 
 ```typescript
 // src/routes/admin/+layout.server.ts
@@ -1601,7 +1601,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 };
 ```
 
-- [ ] **Step 2: Admin dashboard server (revenue stats, low stock, recent orders)**
+- [x] **Step 2: Admin dashboard server (revenue stats, low stock, recent orders)**
 
 ```typescript
 // src/routes/admin/+page.server.ts
@@ -1629,20 +1629,20 @@ export const load: PageServerLoad = async () => {
 };
 ```
 
-- [ ] **Step 3: Dashboard Svelte page (KPI cards, low stock list, recent orders table)**
+- [x] **Step 3: Dashboard Svelte page (KPI cards, low stock list, recent orders table)**
 
-- [ ] **Step 4: Categories admin page (nested tree, create/edit/delete)**
+- [x] **Step 4: Categories admin page (nested tree, create/edit/delete)**
 
 CRUD with form actions. Category images uploaded via `/api/upload`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add admin panel layout, dashboard, and categories"
 ```
 
-- [ ] **Step 6: Update this plan, mark task complete, prompt user**
+- [x] **Step 6: Update this plan, mark task complete, prompt user**
 
 ---
 
