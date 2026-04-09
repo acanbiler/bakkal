@@ -1702,7 +1702,7 @@ git commit -m "feat: add admin products CRUD with Meilisearch sync"
 
 ---
 
-## Task 13: Admin Panel — Orders & Settings
+## ✅ Task 13: Admin Panel — Orders & Settings
 
 **Files:**
 - Create: `src/routes/admin/siparisler/+page.svelte`
@@ -1712,13 +1712,13 @@ git commit -m "feat: add admin products CRUD with Meilisearch sync"
 - Create: `src/routes/admin/ayarlar/+page.svelte`
 - Create: `src/routes/admin/ayarlar/+page.server.ts`
 
-- [ ] **Step 1: Orders list page (filter by status + date, paginated)**
+- [x] **Step 1: Orders list page (filter by status + date, paginated)**
 
-- [ ] **Step 2: Order detail page**
+- [x] **Step 2: Order detail page**
 
 Show: items, totals, Tami reference fields. Actions: Mark as Shipped, Cancel (calls `/api/odeme/iptal`), Refund (calls `/api/odeme/iade`).
 
-- [ ] **Step 3: Settings page server (load + save singleton)**
+- [x] **Step 3: Settings page server (load + save singleton)**
 
 ```typescript
 // src/routes/admin/ayarlar/+page.server.ts
@@ -1728,18 +1728,18 @@ Show: items, totals, Tami reference fields. Actions: Mark as Shipped, Cancel (ca
 // Hero image upload: same constraints as product images
 ```
 
-- [ ] **Step 4: Settings Svelte page**
+- [x] **Step 4: Settings Svelte page**
 
 Logo upload, site name, primary color picker, hero fields, contact info, social URLs.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add admin orders management and settings page"
 ```
 
-- [ ] **Step 6: Update this plan, mark task complete, prompt user**
+- [x] **Step 6: Update this plan, mark task complete, prompt user**
 
 ---
 
