@@ -24,7 +24,6 @@
 		"@types/bcryptjs": "^2.4.6",
 		"@types/node": "^25.5.2",
 		"autoprefixer": "^10.4.27",
-		"drizzle-kit": "^0.31.10",
 		"postcss": "^8.5.9",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
@@ -34,6 +33,7 @@
 	},
 	"dependencies": {
 		"@lucia-auth/adapter-drizzle": "^1.1.0",
+		"drizzle-kit": "^0.31.10",
 		"bcryptjs": "^3.0.3",
 		"drizzle-orm": "^0.45.2",
 		"lucia": "^3.2.2",
