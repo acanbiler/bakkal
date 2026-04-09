@@ -1107,7 +1107,7 @@ export const actions: Actions = {
 - Create: `src/routes/urunler/+page.server.ts`
 - Create: `src/lib/components/shop/ProductCard.svelte`
 
-- [ ] **Step 1: Landing page server (featured products + categories from Meilisearch)**
+- [x] **Step 1: Landing page server (featured products + categories from Meilisearch)**
 
 ```typescript
 // src/routes/+page.server.ts
@@ -1128,11 +1128,11 @@ export const load: PageServerLoad = async () => {
 };
 ```
 
-- [ ] **Step 2: Landing page Svelte (hero, category grid, featured products, trust badges)**
+- [x] **Step 2: Landing page Svelte (hero, category grid, featured products, trust badges)**
 
 Use `tr` for all text. Hero title/subtitle from `data.settings`. Featured products rendered with `ProductCard`.
 
-- [ ] **Step 3: ProductCard component**
+- [x] **Step 3: ProductCard component**
 
 ```svelte
 <!-- src/lib/components/shop/ProductCard.svelte -->
@@ -1168,7 +1168,7 @@ Use `tr` for all text. Hero title/subtitle from `data.settings`. Featured produc
 </div>
 ```
 
-- [ ] **Step 4: Product listing page server (Meilisearch search + filters from URL params)**
+- [x] **Step 4: Product listing page server (Meilisearch search + filters from URL params)**
 
 ```typescript
 // src/routes/urunler/+page.server.ts
@@ -1222,18 +1222,13 @@ export const load: PageServerLoad = async ({ url }) => {
 };
 ```
 
-- [ ] **Step 5: Product listing Svelte page (filter sidebar, results grid, pagination)**
+- [x] **Step 5: Product listing Svelte page (filter sidebar, results grid, pagination)**
 
-Use `tr` for all UI text. Handle `503` error with Turkish message from `tr.listing.searchUnavailable`.
+- [x] **Step 6: Commit**
 
-- [ ] **Step 6: Commit**
+- [x] **Step 7: Update this plan, mark task complete, prompt user**
 
-```bash
-git add -A
-git commit -m "feat: add landing page and product listing with Meilisearch"
-```
-
-- [ ] **Step 7: Update this plan, mark task complete, prompt user**
+> ✅ **COMPLETED** — Svelte 5 syntax. Landing page server wraps Meilisearch in try/catch (non-fatal in dev). ProductCard shows toast on add. Listing page has brand facets, vehicle filter, price range, pagination.
 
 ---
 
