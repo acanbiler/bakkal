@@ -399,7 +399,7 @@ CREATE INDEX idx_fitments_token ON vehicle_fitments USING GIN (to_tsvector('simp
 - Create: `src/lib/server/upload.ts`
 - Create: `src/hooks.server.ts`
 
-- [ ] **Step 1: Write auth.ts (Lucia + Drizzle adapter)**
+- [x] **Step 1: Write auth.ts (Lucia + Drizzle adapter)**
 
 ```typescript
 // src/lib/server/auth.ts
@@ -698,14 +698,11 @@ export async function deleteUpload(url: string) {
 }
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
-```bash
-git add -A
-git commit -m "feat: add auth, search client, tami crypto, upload helpers"
-```
+- [x] **Step 10: Update this plan, mark task complete, prompt user**
 
-- [ ] **Step 10: Update this plan, mark task complete, prompt user**
+> ✅ **COMPLETED** — Fixed: Meilisearch SDK exports `Meilisearch` (not `MeiliSearch`). Added `mkdir({ recursive: true })` in upload.ts so subdirs are auto-created.
 
 ---
 
