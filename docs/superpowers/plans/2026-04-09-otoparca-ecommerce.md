@@ -1402,7 +1402,7 @@ git commit -m "feat: add cart page and checkout flow"
 - Create: `src/routes/api/urunler/+server.ts`
 - Create: `src/routes/api/upload/+server.ts`
 
-- [ ] **Step 1: POST /api/odeme/baslat**
+- [x] **Step 1: POST /api/odeme/baslat**
 
 Implements §6.5 Step 1:
 1. Validate cart + address fields (Zod schema)
@@ -1415,7 +1415,7 @@ Implements §6.5 Step 1:
 
 Log every Tami request/response with `tami_order_id` and `success` field.
 
-- [ ] **Step 2: POST /api/odeme/callback (x-www-form-urlencoded)**
+- [x] **Step 2: POST /api/odeme/callback (x-www-form-urlencoded)**
 
 Implements §6.5 Step 3:
 1. Parse form data
@@ -1432,15 +1432,15 @@ Implements §6.5 Step 3:
 8. Handle stock insufficiency at decrement time → rollback, mark BASARISIZ, issue immediate Tami refund
 9. Redirect to `/odeme/sonuc?durum=basarili` or `basarisiz`
 
-- [ ] **Step 3: POST /api/odeme/iptal (admin only)**
+- [x] **Step 3: POST /api/odeme/iptal (admin only)**
 
 Check `locals.user.role === 'ADMIN'`, POST to Tami `/payment/cancel`, restore stock, update statuses.
 
-- [ ] **Step 4: POST /api/odeme/iade (admin only)**
+- [x] **Step 4: POST /api/odeme/iade (admin only)**
 
 Check admin, POST to Tami `/payment/refund`, handle partial amounts, restore stock proportionally on full refund.
 
-- [ ] **Step 5: POST /api/bin**
+- [x] **Step 5: POST /api/bin**
 
 ```typescript
 // src/routes/api/bin/+server.ts
@@ -1465,7 +1465,7 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 ```
 
-- [ ] **Step 6: GET /api/urunler (Meilisearch proxy for live search)**
+- [x] **Step 6: GET /api/urunler (Meilisearch proxy for live search)**
 
 ```typescript
 // src/routes/api/urunler/+server.ts
@@ -1489,18 +1489,18 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 ```
 
-- [ ] **Step 7: POST /api/upload**
+- [x] **Step 7: POST /api/upload**
 
 Use `saveUpload()` from `upload.ts`. Enforce rate limiting (handled by Nginx). Return `{ url }`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add payment, bin, search, and upload API endpoints"
 ```
 
-- [ ] **Step 9: Update this plan, mark task complete, prompt user**
+- [x] **Step 9: Update this plan, mark task complete, prompt user**
 
 ---
 
