@@ -713,7 +713,7 @@ export async function deleteUpload(url: string) {
 - Create: `src/lib/stores/cart.ts`
 - Create: `src/lib/stores/toast.ts`
 
-- [ ] **Step 1: Write tr.ts with all UI strings**
+- [x] **Step 1: Write tr.ts with all UI strings**
 
 ```typescript
 // src/lib/i18n/tr.ts
@@ -875,7 +875,7 @@ export const tr = {
 } as const;
 ```
 
-- [ ] **Step 2: Write cart.ts store**
+- [x] **Step 2: Write cart.ts store**
 
 ```typescript
 // src/lib/stores/cart.ts
@@ -930,7 +930,7 @@ function createCart() {
 export const cart = createCart();
 ```
 
-- [ ] **Step 3: Write toast.ts store**
+- [x] **Step 3: Write toast.ts store**
 
 ```typescript
 // src/lib/stores/toast.ts
@@ -951,14 +951,11 @@ export const toasts = {
 };
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
-```bash
-git add -A
-git commit -m "feat: add i18n locale file and cart/toast stores"
-```
+- [x] **Step 5: Update this plan, mark task complete, prompt user**
 
-- [ ] **Step 5: Update this plan, mark task complete, prompt user**
+> ✅ **COMPLETED**
 
 ---
 
