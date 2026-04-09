@@ -1743,7 +1743,7 @@ git commit -m "feat: add admin orders management and settings page"
 
 ---
 
-## Task 14: Scripts & Docker Infrastructure
+## ✅ Task 14: Scripts & Docker Infrastructure
 
 **Files:**
 - Create: `scripts/create-admin.mjs`
@@ -1754,7 +1754,7 @@ git commit -m "feat: add admin orders management and settings page"
 - Create: `docker-compose.yml`
 - Create: `nginx.conf`
 
-- [ ] **Step 1: create-admin.mjs**
+- [x] **Step 1: create-admin.mjs**
 
 ```javascript
 // scripts/create-admin.mjs
@@ -1772,7 +1772,7 @@ console.log(`Admin created: ${email} / ${password}`);
 await sql.end();
 ```
 
-- [ ] **Step 2: reindex.mjs**
+- [x] **Step 2: reindex.mjs**
 
 ```javascript
 // scripts/reindex.mjs
@@ -1838,7 +1838,7 @@ console.log(JSON.stringify({ level: 'info', msg: 'reindex complete', total }));
 await sql.end();
 ```
 
-- [ ] **Step 3: check-stale-orders.mjs**
+- [x] **Step 3: check-stale-orders.mjs**
 
 ```javascript
 // scripts/check-stale-orders.mjs
@@ -1851,11 +1851,11 @@ await sql.end();
 // Log all actions as JSON
 ```
 
-- [ ] **Step 4: Dockerfile (from spec §12.4)**
+- [x] **Step 4: Dockerfile (from spec §12.4)**
 
 Exact multi-stage build from spec.
 
-- [ ] **Step 5: docker-entrypoint.sh**
+- [x] **Step 5: docker-entrypoint.sh**
 
 ```bash
 #!/bin/sh
@@ -1868,22 +1868,22 @@ echo '{"level":"info","msg":"starting server"}'
 exec node build/index.js
 ```
 
-- [ ] **Step 6: docker-compose.yml (from spec §12.5)**
+- [x] **Step 6: docker-compose.yml (from spec §12.5)**
 
 Exact configuration from spec including volumes, healthchecks, certbot service.
 
-- [ ] **Step 7: nginx.conf (from spec §12.6)**
+- [x] **Step 7: nginx.conf (from spec §12.6)**
 
 Rate limiting zones, gzip, SSL config, upload path, proxy rules.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add scripts, Dockerfile, docker-compose, nginx config"
 ```
 
-- [ ] **Step 9: Update this plan, mark task complete, prompt user**
+- [x] **Step 9: Update this plan, mark task complete, prompt user**
 
 ---
 
