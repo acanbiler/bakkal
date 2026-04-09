@@ -1887,14 +1887,14 @@ git commit -m "feat: add scripts, Dockerfile, docker-compose, nginx config"
 
 ---
 
-## Task 15: UI Polish, Toast, Error Pages & Final Wiring
+## ✅ Task 15: UI Polish, Toast, Error Pages & Final Wiring
 
 **Files:**
 - Create: `src/lib/components/ui/ToastContainer.svelte`
 - Create: `src/routes/+error.svelte`
 - Modify: various components for consistent Tailwind styling
 
-- [ ] **Step 1: ToastContainer component**
+- [x] **Step 1: ToastContainer component**
 
 ```svelte
 <!-- src/lib/components/ui/ToastContainer.svelte -->
@@ -1908,7 +1908,7 @@ git commit -m "feat: add scripts, Dockerfile, docker-compose, nginx config"
 </div>
 ```
 
-- [ ] **Step 2: Error page**
+- [x] **Step 2: Error page**
 
 ```svelte
 <!-- src/routes/+error.svelte -->
@@ -1919,7 +1919,7 @@ git commit -m "feat: add scripts, Dockerfile, docker-compose, nginx config"
 <h1>{$page.status === 404 ? tr.errors.notFound : tr.errors.serverError}</h1>
 ```
 
-- [ ] **Step 3: Structured logging helper**
+- [x] **Step 3: Structured logging helper**
 
 Add `src/lib/server/logger.ts`:
 ```typescript
@@ -1930,11 +1930,11 @@ export function log(level: 'info'|'warn'|'error', fields: Record<string, unknown
 
 Use `log()` in all payment routes for Tami events.
 
-- [ ] **Step 4: Ensure `<html lang="tr">` on root layout**
+- [x] **Step 4: Ensure `<html lang="tr">` on root layout**
 
 Verify `src/routes/+layout.svelte` has `<svelte:head><html lang="tr" /></svelte:head>`.
 
-- [ ] **Step 5: Verify no inline Turkish strings in components**
+- [x] **Step 5: Verify no inline Turkish strings in components**
 
 Grep for any Turkish text that bypassed `tr.*` — fix if found.
 
@@ -1942,7 +1942,7 @@ Grep for any Turkish text that bypassed `tr.*` — fix if found.
 grep -r '[ğüşıöçĞÜŞİÖÇ]' src/routes src/lib/components --include="*.svelte" | grep -v 'tr\.' | grep -v '<!-- '
 ```
 
-- [ ] **Step 6: Final build verification**
+- [x] **Step 6: Final build verification**
 
 ```bash
 npm run build
@@ -1950,14 +1950,14 @@ npm run build
 
 Expected: clean build, no type errors.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A
 git commit -m "feat: add toast UI, error page, logging helper — complete scaffold"
 ```
 
-- [ ] **Step 8: Update this plan, mark all tasks complete**
+- [x] **Step 8: Update this plan, mark all tasks complete**
 
 ---
 
