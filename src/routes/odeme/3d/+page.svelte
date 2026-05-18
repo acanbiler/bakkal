@@ -5,8 +5,8 @@
   let container: HTMLDivElement;
 
   onMount(() => {
-    const html = sessionStorage.getItem('tami_3d_html') ?? '';
-    sessionStorage.removeItem('tami_3d_html');
+    const html = sessionStorage.getItem('iyzico_3d_html') ?? '';
+    sessionStorage.removeItem('iyzico_3d_html');
     if (!html) {
       window.location.href = '/odeme/sonuc?durum=basarisiz';
       return;

@@ -296,14 +296,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "tami_order_id": {
-          "name": "tami_order_id",
+        "iyzico_payment_id": {
+          "name": "iyzico_payment_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "tami_correl_id": {
-          "name": "tami_correl_id",
+        "iyzico_conversation_id": {
+          "name": "iyzico_conversation_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -365,11 +365,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "orders_tami_order_id_unique": {
-          "name": "orders_tami_order_id_unique",
+        "orders_iyzico_payment_id_unique": {
+          "name": "orders_iyzico_payment_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "tami_order_id"
+            "iyzico_payment_id"
           ]
         }
       },
@@ -399,8 +399,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "tami_order_id": {
-          "name": "tami_order_id",
+        "iyzico_payment_id": {
+          "name": "iyzico_payment_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false

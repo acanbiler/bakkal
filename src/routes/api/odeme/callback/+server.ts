@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { orders, orderItems, paymentAttempts, products } from '$lib/server/db/schema.js';
 import { eq, and, sql } from 'drizzle-orm';
-import { verifyCallbackHash, tamiRequest, newCorrelId } from '$lib/server/tami.js';
+import { iyzicoRequest } from '$lib/server/iyzico.js';
 import { log } from '$lib/server/logger.js';
 import type { RequestHandler } from './$types';
 
@@ -11,23 +11,16 @@ export const POST: RequestHandler = async ({ request }) => {
 	const params: Record<string, string> = {};
 	for (const [k, v] of formData.entries()) params[k] = String(v);
 
-	const tamiOrderId = params.orderId ?? '';
-	const receivedHash = params.hash ?? '';
+	const paymentId = params.paymentId ?? '';
 
 	// Find order
-	const [order] = await db.select().from(orders).where(eq(orders.tamiOrderId, tamiOrderId));
+	const [order] = await db.select().from(orders).where(eq(orders.iyzicoPaymentId, paymentId));
 	if (!order) redirect(302, '/odeme/sonuc?durum=basarisiz');
 
 	// Duplicate callback guard
 	if (order.paymentStatus === 'BASARILI') redirect(302, '/odeme/sonuc?durum=basarili');
 
-	// Hash verification — hard fail on mismatch
-	if (!verifyCallbackHash(params, receivedHash)) {
-		log('warn', { msg: 'callback hash mismatch', tamiOrderId });
-		redirect(302, '/odeme/sonuc?durum=basarisiz');
-	}
-
-	if (params.success !== 'true') {
+	if (params.status && params.status !== 'success') {
 		await db
 			.update(orders)
 			.set({ status: 'BEKLEMEDE', paymentStatus: 'BASARISIZ' })
@@ -35,20 +28,29 @@ export const POST: RequestHandler = async ({ request }) => {
 		await db
 			.update(paymentAttempts)
 			.set({ status: 'BASARISIZ', resolvedAt: new Date() })
-			.where(and(eq(paymentAttempts.orderId, order.id), eq(paymentAttempts.tamiOrderId, tamiOrderId)));
+			.where(and(eq(paymentAttempts.orderId, order.id), eq(paymentAttempts.iyzicoPaymentId, paymentId)));
 		redirect(302, '/odeme/sonuc?durum=basarisiz');
 	}
 
-	// Complete 3DS with Tami
-	const correlId = newCorrelId();
 	let completeRes: any;
 	try {
-		completeRes = await tamiRequest('/payment/complete-3ds', { orderId: tamiOrderId }, correlId);
+		completeRes = await iyzicoRequest('/payment/v2/3dsecure/auth', {
+			locale: 'tr',
+			paymentId,
+			conversationId: order.iyzicoConversationId ?? order.id,
+			paidPrice: order.totalAmount,
+			basketId: order.id,
+			currency: 'TRY'
+		});
 	} catch {
 		redirect(302, '/odeme/sonuc?durum=basarisiz');
 	}
 
-	if (!completeRes?.success) {
+	if (
+		completeRes?.status !== 'success' ||
+		Number(completeRes?.fraudStatus) === -1 ||
+		Number(completeRes?.mdStatus) !== 1
+	) {
 		await db
 			.update(orders)
 			.set({ status: 'BEKLEMEDE', paymentStatus: 'BASARISIZ' })
@@ -84,8 +86,11 @@ export const POST: RequestHandler = async ({ request }) => {
 				.set({
 					status: 'ODEME_ALINDI',
 					paymentStatus: 'BASARILI',
-					bankAuthCode: completeRes.bankAuthCode,
-					bankRefNumber: completeRes.bankReferenceNumber
+					bankAuthCode: completeRes.authCode,
+					bankRefNumber: completeRes.hostReference,
+					notes: completeRes.itemTransactions
+						? JSON.stringify({ iyzicoItemTransactions: completeRes.itemTransactions })
+						: order.notes
 				})
 				.where(eq(orders.id, order.id));
 
@@ -95,7 +100,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				.where(
 					and(
 						eq(paymentAttempts.orderId, order.id),
-						eq(paymentAttempts.tamiOrderId, tamiOrderId)
+						eq(paymentAttempts.iyzicoPaymentId, paymentId)
 					)
 				);
 		});
@@ -109,13 +114,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (isStock) {
 			// Immediate refund
 			try {
-				await tamiRequest(
-					'/payment/refund',
-					{ orderId: tamiOrderId, amount: order.totalAmount },
-					newCorrelId()
-				);
+				await iyzicoRequest('/v2/payment/refund', {
+					locale: 'tr',
+					conversationId: order.iyzicoConversationId ?? order.id,
+					paymentId,
+					price: order.totalAmount,
+					currency: 'TRY'
+				});
 			} catch {
-				log('error', { msg: 'callback stock-insufficient refund failed', tamiOrderId });
+				log('error', { msg: 'callback stock-insufficient refund failed', paymentId });
 			}
 		}
 

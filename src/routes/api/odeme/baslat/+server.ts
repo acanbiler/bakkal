@@ -2,9 +2,14 @@ import { json, error } from '@sveltejs/kit';
 import { randomUUID } from 'crypto';
 import { z } from 'zod';
 import { db } from '$lib/server/db/index.js';
-import { orders, orderItems, paymentAttempts, products } from '$lib/server/db/schema.js';
-import { eq, max } from 'drizzle-orm';
-import { tamiRequest, newCorrelId, buildSecurityHash } from '$lib/server/tami.js';
+import { orders, orderItems, paymentAttempts } from '$lib/server/db/schema.js';
+import { eq } from 'drizzle-orm';
+import {
+	iyzicoRequest,
+	newConversationId,
+	normalizePhone,
+	splitFullName
+} from '$lib/server/iyzico.js';
 import type { RequestHandler } from './$types';
 
 const CartItemSchema = z.object({
@@ -21,6 +26,7 @@ const BodySchema = z.object({
 	items: z.array(CartItemSchema).min(1),
 	shippingAddress: z.object({
 		fullName: z.string().min(1),
+		email: z.string().email(),
 		phone: z.string().min(1),
 		address: z.string().min(1),
 		district: z.string().min(1),
@@ -48,20 +54,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.toFixed(2);
 
 	const orderId = randomUUID();
-	const correlId = newCorrelId();
+	const conversationId = newConversationId();
 
 	// Create order + items in a single transaction
 	await db.transaction(async (tx) => {
 		await tx.insert(orders).values({
 			id: orderId,
 			userId: locals.user?.id ?? null,
+			guestEmail: locals.user?.email ?? shippingAddress.email,
 			status: 'ODEME_BEKLENIYOR',
 			paymentStatus: 'ISLENIYOR',
 			totalAmount,
 			installmentCount,
 			shippingAddress,
 			billingAddress: shippingAddress,
-			tamiCorrelId: correlId
+			iyzicoConversationId: conversationId,
+			expiresAt: new Date(Date.now() + 30 * 60 * 1000)
 		});
 
 		await tx.insert(orderItems).values(
@@ -86,25 +94,67 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	const [expMonth, expYear] = card.expiry.split('/');
-	const securityHash = buildSecurityHash(orderId, totalAmount);
+	const { name, surname } = splitFullName(shippingAddress.fullName);
+	const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
 
-	const tamiBody = {
-		merchantOrderId: orderId,
-		amount: totalAmount,
-		currencyCode: 'TRY',
-		installmentCount,
-		cardNumber: card.cardNumber,
-		cardHolderName: card.cardHolder,
-		expireMonth: expMonth,
-		expireYear: `20${expYear}`,
-		cvv: card.cvv,
-		securityHash,
-		callbackUrl: `${process.env.PUBLIC_BASE_URL}/api/odeme/callback`
+	const iyzicoBody = {
+		locale: 'tr',
+		conversationId,
+		price: totalAmount,
+		paidPrice: totalAmount,
+		currency: 'TRY',
+		installment: installmentCount,
+		paymentChannel: 'WEB',
+		basketId: orderId,
+		paymentGroup: 'PRODUCT',
+		callbackUrl: `${process.env.PUBLIC_BASE_URL}/api/odeme/callback`,
+		paymentCard: {
+			cardHolderName: card.cardHolder,
+			cardNumber: card.cardNumber,
+			expireMonth: expMonth,
+			expireYear: expYear,
+			cvc: card.cvv,
+			registerCard: 0
+		},
+		buyer: {
+			id: locals.user?.id ?? orderId,
+			name,
+			surname,
+			identityNumber: process.env.IYZICO_BUYER_IDENTITY_NUMBER ?? '11111111111',
+			email: locals.user?.email ?? shippingAddress.email,
+			gsmNumber: normalizePhone(shippingAddress.phone),
+			registrationAddress: shippingAddress.address,
+			city: shippingAddress.city,
+			country: 'Turkey',
+			zipCode: shippingAddress.zipCode || '00000',
+			ip
+		},
+		shippingAddress: {
+			address: shippingAddress.address,
+			zipCode: shippingAddress.zipCode || '00000',
+			contactName: shippingAddress.fullName,
+			city: shippingAddress.city,
+			country: 'Turkey'
+		},
+		billingAddress: {
+			address: shippingAddress.address,
+			zipCode: shippingAddress.zipCode || '00000',
+			contactName: shippingAddress.fullName,
+			city: shippingAddress.city,
+			country: 'Turkey'
+		},
+		basketItems: items.map((i) => ({
+			id: i.productId,
+			price: (i.price * i.quantity).toFixed(2),
+			name: i.name,
+			category1: 'Oto Parca',
+			itemType: 'PHYSICAL'
+		}))
 	};
 
-	let tamiRes: any;
+	let iyzicoRes: any;
 	try {
-		tamiRes = await tamiRequest('/payment/auth', tamiBody, correlId);
+		iyzicoRes = await iyzicoRequest('/payment/3dsecure/initialize', iyzicoBody);
 	} catch (e) {
 		await db
 			.update(orders)
@@ -114,12 +164,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.update(paymentAttempts)
 			.set({ status: 'BASARISIZ', resolvedAt: new Date(), errorMessage: String(e) })
 			.where(eq(paymentAttempts.id, attemptId));
-		error(502, 'TAMI_UNREACHABLE');
+		error(502, 'IYZICO_UNREACHABLE');
 	}
 
-	const tamiOrderId: string = tamiRes?.orderId ?? tamiRes?.tami_order_id ?? '';
+	const paymentId: string = iyzicoRes?.paymentId ?? '';
 
-	if (!tamiRes?.success || !tamiRes?.threeDSHtmlContent) {
+	if (iyzicoRes?.status !== 'success' || !iyzicoRes?.threeDSHtmlContent || !paymentId) {
 		await db
 			.update(orders)
 			.set({ status: 'BEKLEMEDE', paymentStatus: 'BASARISIZ' })
@@ -129,18 +179,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.set({
 				status: 'BASARISIZ',
 				resolvedAt: new Date(),
-				tamiOrderId,
-				errorCode: tamiRes?.errorCode,
-				errorMessage: tamiRes?.errorMessage
+				iyzicoPaymentId: paymentId,
+				errorCode: iyzicoRes?.errorCode,
+				errorMessage: iyzicoRes?.errorMessage
 			})
 			.where(eq(paymentAttempts.id, attemptId));
 		error(402, 'PAYMENT_REJECTED');
 	}
 
-	// Store Tami order ID on order and attempt
-	await db.update(orders).set({ tamiOrderId }).where(eq(orders.id, orderId));
-	await db.update(paymentAttempts).set({ tamiOrderId }).where(eq(paymentAttempts.id, attemptId));
+	await db.update(orders).set({ iyzicoPaymentId: paymentId }).where(eq(orders.id, orderId));
+	await db.update(paymentAttempts).set({ iyzicoPaymentId: paymentId }).where(eq(paymentAttempts.id, attemptId));
 
-	const html = Buffer.from(tamiRes.threeDSHtmlContent, 'base64').toString('utf8');
+	const html = Buffer.from(iyzicoRes.threeDSHtmlContent, 'base64').toString('utf8');
 	return json({ html });
 };

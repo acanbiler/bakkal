@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { orders, orderItems, products } from '$lib/server/db/schema.js';
 import { eq, sql } from 'drizzle-orm';
-import { tamiRequest, newCorrelId } from '$lib/server/tami.js';
+import { iyzicoRequest, newConversationId } from '$lib/server/iyzico.js';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -15,14 +15,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!order) error(404, 'ORDER_NOT_FOUND');
 	if (order.paymentStatus !== 'BASARILI') error(409, 'NOT_CANCELLABLE');
 
-	const correlId = newCorrelId();
-	const res: any = await tamiRequest(
-		'/payment/cancel',
-		{ orderId: order.tamiOrderId },
-		correlId
-	);
+	const res: any = await iyzicoRequest('/payment/cancel', {
+		locale: 'tr',
+		conversationId: order.iyzicoConversationId ?? newConversationId(),
+		paymentId: order.iyzicoPaymentId
+	});
 
-	if (!res?.success) error(502, res?.errorMessage ?? 'TAMI_CANCEL_FAILED');
+	if (res?.status !== 'success') error(502, res?.errorMessage ?? 'IYZICO_CANCEL_FAILED');
 
 	// Restore stock
 	const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));

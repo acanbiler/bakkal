@@ -1,41 +1,39 @@
 // scripts/check-stale-orders.mjs
-// Polls Tami for orders stuck in ISLENIYOR past their expires_at.
+// Polls iyzico for orders stuck in ISLENIYOR past their expires_at.
 // Run periodically (e.g. every 5 minutes via cron or docker healthcheck).
 // Usage: node scripts/check-stale-orders.mjs
 import postgres from 'postgres';
-import { createHash } from 'crypto';
+import { createHmac } from 'crypto';
 
 const sql = postgres(process.env.DATABASE_URL);
+const baseUrl = process.env.IYZICO_API_BASE_URL ?? 'https://sandbox-api.iyzipay.com';
 
-function buildAuthToken() {
-  const merchant = process.env.TAMI_MERCHANT_NUMBER;
-  const terminal = process.env.TAMI_TERMINAL_NUMBER;
-  const secret = process.env.TAMI_SECRET_KEY;
-  const hash = createHash('sha256').update(merchant + terminal + secret).digest('base64');
-  return `${merchant}:${terminal}:${hash}`;
+function buildAuthorization(path, body, randomKey) {
+  const requestBody = JSON.stringify(body ?? {});
+  const signature = createHmac('sha256', process.env.IYZICO_SECRET_KEY)
+    .update(`${randomKey}${path}${requestBody}`)
+    .digest('hex');
+  const authorization = `apiKey:${process.env.IYZICO_API_KEY}&randomKey:${randomKey}&signature:${signature}`;
+  return `IYZWSv2 ${Buffer.from(authorization, 'utf8').toString('base64')}`;
 }
 
-function newCorrelId() {
-  return `Corr${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
-}
-
-async function tamiQuery(tamiOrderId) {
-  const correlId = newCorrelId();
-  const res = await fetch(`${process.env.TAMI_API_BASE_URL}/payment/query`, {
+async function iyzicoRequest(path, body) {
+  const randomKey = `${Date.now()}${Math.random().toString().slice(2, 11)}`;
+  const res = await fetch(`${baseUrl}${path}`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      CorrelationId: correlId,
-      'PG-Auth-Token': buildAuthToken()
+      Authorization: buildAuthorization(path, body, randomKey),
+      'x-iyzi-rnd': randomKey,
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ orderId: tamiOrderId })
+    body: JSON.stringify(body ?? {})
   });
-  if (!res.ok) throw new Error(`Tami query HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`iyzico ${path} HTTP ${res.status}`);
   return res.json();
 }
 
 const staleOrders = await sql`
-  SELECT id, tami_order_id, total_amount
+  SELECT id, iyzico_payment_id, iyzico_conversation_id, total_amount
   FROM orders
   WHERE payment_status = 'ISLENIYOR' AND expires_at < now()
 `;
@@ -46,14 +44,17 @@ for (const order of staleOrders) {
   try {
     let result;
     try {
-      result = await tamiQuery(order.tami_order_id);
+      result = await iyzicoRequest('/payment/detail', {
+        locale: 'tr',
+        paymentId: order.iyzico_payment_id,
+        paymentConversationId: order.iyzico_conversation_id
+      });
     } catch (e) {
-      console.log(JSON.stringify({ level: 'warn', msg: 'tami query failed', orderId: order.id, error: String(e) }));
+      console.log(JSON.stringify({ level: 'warn', msg: 'iyzico query failed', orderId: order.id, error: String(e) }));
       continue;
     }
 
-    if (!result?.paid) {
-      // Not paid — mark as timed out
+    if (result?.paymentStatus !== 'SUCCESS' || result?.fraudStatus === -1) {
       await sql`
         UPDATE orders
         SET payment_status = 'ZAMAN_ASIMI', updated_at = now()
@@ -61,8 +62,6 @@ for (const order of staleOrders) {
       `;
       console.log(JSON.stringify({ level: 'info', msg: 'order timed out', orderId: order.id }));
     } else {
-      // Edge case: Tami says paid but we haven't processed it yet
-      // Complete in a single transaction: lock/decrement stock, update order + payment_attempts
       await sql.begin(async (tx) => {
         const items = await tx`
           SELECT oi.product_id, oi.quantity
@@ -86,8 +85,9 @@ for (const order of staleOrders) {
           UPDATE orders
           SET status = 'ODEME_ALINDI',
               payment_status = 'BASARILI',
-              bank_auth_code = ${result.bankAuthCode ?? null},
-              bank_ref_number = ${result.bankReferenceNumber ?? null},
+              bank_auth_code = ${result.authCode ?? null},
+              bank_ref_number = ${result.hostReference ?? null},
+              notes = ${result.itemTransactions ? JSON.stringify({ iyzicoItemTransactions: result.itemTransactions }) : null},
               updated_at = now()
           WHERE id = ${order.id}
         `;
@@ -95,7 +95,7 @@ for (const order of staleOrders) {
         await tx`
           UPDATE payment_attempts
           SET status = 'BASARILI', resolved_at = now()
-          WHERE order_id = ${order.id} AND tami_order_id = ${order.tami_order_id}
+          WHERE order_id = ${order.id} AND iyzico_payment_id = ${order.iyzico_payment_id}
         `;
       });
 

@@ -42,22 +42,22 @@ CREATE TABLE "orders" (
 	"installment_count" integer DEFAULT 1 NOT NULL,
 	"shipping_address" jsonb NOT NULL,
 	"billing_address" jsonb NOT NULL,
-	"tami_order_id" text,
-	"tami_correl_id" text,
+	"iyzico_payment_id" text,
+	"iyzico_conversation_id" text,
 	"bank_auth_code" text,
 	"bank_ref_number" text,
 	"notes" text,
 	"expires_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "orders_tami_order_id_unique" UNIQUE("tami_order_id")
+	CONSTRAINT "orders_iyzico_payment_id_unique" UNIQUE("iyzico_payment_id")
 );
 --> statement-breakpoint
 CREATE TABLE "payment_attempts" (
 	"id" text PRIMARY KEY NOT NULL,
 	"order_id" text NOT NULL,
 	"attempt_no" integer NOT NULL,
-	"tami_order_id" text,
+	"iyzico_payment_id" text,
 	"status" text NOT NULL,
 	"initiated_at" timestamp DEFAULT now() NOT NULL,
 	"resolved_at" timestamp,

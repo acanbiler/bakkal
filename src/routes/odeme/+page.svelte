@@ -11,6 +11,7 @@
 
   // Address form
   let fullName = $state('');
+  let email = $state(data.user?.email ?? '');
   let phone = $state('');
   let address = $state('');
   let district = $state('');
@@ -53,7 +54,7 @@
       const res = await fetch('/api/bin', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ bin: digits.slice(0, 8) })
+        body: JSON.stringify({ bin: digits.slice(0, 8), price: cartTotal })
       });
       if (res.ok) {
         const json = await res.json();
@@ -76,7 +77,7 @@
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           items: $cart,
-          shippingAddress: { fullName, phone, address, district, city, zipCode },
+          shippingAddress: { fullName, email, phone, address, district, city, zipCode },
           card: {
             cardNumber: cardNumber.replace(/\s/g, ''),
             cardHolder,
@@ -96,7 +97,7 @@
       }
 
       // Store 3D HTML in sessionStorage for the 3D page to pick up
-      sessionStorage.setItem('tami_3d_html', json.html);
+      sessionStorage.setItem('iyzico_3d_html', json.html);
       goto('/odeme/3d');
     } catch {
       toasts.add(tr.checkout.paymentError, 'error');
@@ -160,6 +161,10 @@
               <input bind:value={fullName} type="text" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
             </div>
             <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700">E-posta</label>
+              <input bind:value={email} type="email" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
               <label class="mb-1 block text-sm font-medium text-gray-700">{tr.checkout.phone}</label>
               <input bind:value={phone} type="tel" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
             </div>
@@ -183,7 +188,7 @@
 
           <button
             onclick={() => step = 2}
-            disabled={!fullName || !phone || !address || !district || !city}
+            disabled={!fullName || !email || !phone || !address || !district || !city}
             class="mt-6 w-full rounded-xl bg-[--primary] py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-40"
           >
             Devam Et →

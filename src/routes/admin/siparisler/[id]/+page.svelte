@@ -153,17 +153,17 @@
     </div>
   </div>
 
-  <!-- Tami Reference Fields -->
+  <!-- Payment Reference Fields -->
   <div class="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Tami / Banka Referans Bilgileri</h2>
+    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">iyzico / Banka Referans Bilgileri</h2>
     <dl class="grid grid-cols-1 gap-2 sm:grid-cols-2 text-sm">
       <div class="flex flex-col gap-0.5">
-        <dt class="text-xs text-gray-500">Tami Sipariş ID</dt>
-        <dd class="font-mono text-gray-800">{o.tamiOrderId ?? '—'}</dd>
+        <dt class="text-xs text-gray-500">iyzico Ödeme ID</dt>
+        <dd class="font-mono text-gray-800">{o.iyzicoPaymentId ?? '—'}</dd>
       </div>
       <div class="flex flex-col gap-0.5">
-        <dt class="text-xs text-gray-500">Tami Korelasyon ID</dt>
-        <dd class="font-mono text-gray-800">{o.tamiCorrelId ?? '—'}</dd>
+        <dt class="text-xs text-gray-500">iyzico Conversation ID</dt>
+        <dd class="font-mono text-gray-800">{o.iyzicoConversationId ?? '—'}</dd>
       </div>
       <div class="flex flex-col gap-0.5">
         <dt class="text-xs text-gray-500">Banka Yetkilendirme Kodu</dt>

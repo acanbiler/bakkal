@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { orders, orderItems, products } from '$lib/server/db/schema.js';
 import { eq, sql } from 'drizzle-orm';
-import { tamiRequest, newCorrelId } from '$lib/server/tami.js';
+import { iyzicoRequest, newConversationId } from '$lib/server/iyzico.js';
 
 export const load: PageServerLoad = async ({ params }) => {
   const [order] = await db.select().from(orders).where(eq(orders.id, params.id));
@@ -31,14 +31,17 @@ export const actions: Actions = {
     if (!order) return fail(404, { error: 'Sipariş bulunamadı.' });
     if (order.paymentStatus !== 'BASARILI') return fail(409, { error: 'Bu sipariş iptal edilemez (ödeme başarılı değil).' });
 
-    const correlId = newCorrelId();
     let res: any;
     try {
-      res = await tamiRequest('/payment/cancel', { orderId: order.tamiOrderId }, correlId);
+      res = await iyzicoRequest('/payment/cancel', {
+        locale: 'tr',
+        conversationId: order.iyzicoConversationId ?? newConversationId(),
+        paymentId: order.iyzicoPaymentId
+      });
     } catch {
-      return fail(502, { error: 'Tami ile iletişim kurulamadı.' });
+      return fail(502, { error: 'iyzico ile iletişim kurulamadı.' });
     }
-    if (!res?.success) return fail(502, { error: res?.errorMessage ?? 'Tami iptal hatası.' });
+    if (res?.status !== 'success') return fail(502, { error: res?.errorMessage ?? 'iyzico iptal hatası.' });
 
     const items = await db.select().from(orderItems).where(eq(orderItems.orderId, params.id));
     await db.transaction(async (tx) => {
@@ -68,14 +71,19 @@ export const actions: Actions = {
     const refundAmount = amount ?? String(order.totalAmount);
     const isFullRefund = refundAmount === String(order.totalAmount);
 
-    const correlId = newCorrelId();
     let res: any;
     try {
-      res = await tamiRequest('/payment/refund', { orderId: order.tamiOrderId, amount: refundAmount }, correlId);
+      res = await iyzicoRequest('/v2/payment/refund', {
+        locale: 'tr',
+        conversationId: order.iyzicoConversationId ?? newConversationId(),
+        paymentId: order.iyzicoPaymentId,
+        price: refundAmount,
+        currency: 'TRY'
+      });
     } catch {
-      return fail(502, { error: 'Tami ile iletişim kurulamadı.' });
+      return fail(502, { error: 'iyzico ile iletişim kurulamadı.' });
     }
-    if (!res?.success) return fail(502, { error: res?.errorMessage ?? 'Tami iade hatası.' });
+    if (res?.status !== 'success') return fail(502, { error: res?.errorMessage ?? 'iyzico iade hatası.' });
 
     await db.transaction(async (tx) => {
       if (isFullRefund) {

@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { orders, orderItems, products } from '$lib/server/db/schema.js';
 import { eq, sql } from 'drizzle-orm';
-import { tamiRequest, newCorrelId } from '$lib/server/tami.js';
+import { iyzicoRequest, newConversationId } from '$lib/server/iyzico.js';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -18,14 +18,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const refundAmount = amount ? String(amount) : order.totalAmount;
 	const isFullRefund = refundAmount === order.totalAmount;
 
-	const correlId = newCorrelId();
-	const res: any = await tamiRequest(
-		'/payment/refund',
-		{ orderId: order.tamiOrderId, amount: refundAmount },
-		correlId
-	);
+	const res: any = await iyzicoRequest('/v2/payment/refund', {
+		locale: 'tr',
+		conversationId: order.iyzicoConversationId ?? newConversationId(),
+		paymentId: order.iyzicoPaymentId,
+		price: refundAmount,
+		currency: 'TRY'
+	});
 
-	if (!res?.success) error(502, res?.errorMessage ?? 'TAMI_REFUND_FAILED');
+	if (res?.status !== 'success') error(502, res?.errorMessage ?? 'IYZICO_REFUND_FAILED');
 
 	await db.transaction(async (tx) => {
 		if (isFullRefund) {
